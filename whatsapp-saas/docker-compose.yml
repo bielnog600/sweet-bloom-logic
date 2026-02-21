@@ -7,21 +7,17 @@ services:
       POSTGRES_USER: ${DB_USER:-whatsapp_saas}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-supersecret}
       POSTGRES_DB: ${DB_NAME:-whatsapp_saas}
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/src/db/migrations:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U whatsapp_saas"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-whatsapp_saas}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
     volumes:
       - redisdata:/data
     healthcheck:
@@ -34,17 +30,18 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "3001:3001"
     env_file:
       - .env
+    environment:
+      - SESSIONS_DIR=/app/sessions
+      - NODE_ENV=production
+    volumes:
+      - whatsapp_sessions:/app/sessions
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ./backend/src:/app/src
     restart: unless-stopped
 
   worker:
@@ -54,6 +51,11 @@ services:
     command: ["node", "dist/jobs/worker.js"]
     env_file:
       - .env
+    environment:
+      - SESSIONS_DIR=/app/sessions
+      - NODE_ENV=production
+    volumes:
+      - whatsapp_sessions:/app/sessions
     depends_on:
       postgres:
         condition: service_healthy
@@ -65,11 +67,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
-      - NEXT_PUBLIC_WS_URL=ws://localhost:3001
+      - NEXT_PUBLIC_API_URL=https://api.seudominio.com
+      - NEXT_PUBLIC_WS_URL=https://api.seudominio.com
     depends_on:
       - backend
     restart: unless-stopped
@@ -77,3 +77,4 @@ services:
 volumes:
   pgdata:
   redisdata:
+  whatsapp_sessions:
