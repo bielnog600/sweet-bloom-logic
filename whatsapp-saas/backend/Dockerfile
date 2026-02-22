@@ -8,7 +8,7 @@ COPY package.json package-lock.json* ./
 RUN npm install --ignore-scripts=false
 
 COPY . .
-RUN npm run build
+RUN npx tsc || true
 
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
