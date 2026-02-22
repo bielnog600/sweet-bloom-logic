@@ -10,8 +10,8 @@ import makeWASocket, {
 import { Boom } from '@hapi/boom';
 import { Pool } from 'pg';
 import pino from 'pino';
-import { encrypt, decrypt } from '../utils/encryption';
-import { eventBus, WhatsAppEvent } from '../utils/eventBus';
+import { encrypt, decrypt } from '../../utils/encryption';
+import { eventBus, WhatsAppEvent } from '../../utils/eventBus';
 
 const logger = pino({ level: 'silent' });
 
