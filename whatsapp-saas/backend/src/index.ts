@@ -10,6 +10,7 @@ import { createAuthRoutes } from './modules/auth/auth.routes';
 import { setupWebSocket } from './websocket/ws';
 import { setupQueues, startWorkers } from './jobs/queue';
 import { authMiddleware } from './middleware/auth';
+import { runMigrations } from './db/migrate';
 
 const PORT = process.env.PORT || 3001;
 
@@ -48,6 +49,13 @@ startWorkers(process.env.REDIS_URL || 'redis://localhost:6379', db, waManager);
 // ---- Start ----
 httpServer.listen(PORT, async () => {
   console.log(`[Server] Rodando na porta ${PORT}`);
+
+  // Rodar migrations automaticamente
+  try {
+    await runMigrations(db);
+  } catch (err) {
+    console.error('[Server] Erro ao rodar migrations:', err);
+  }
 
   // Restaurar sessões ao subir
   try {

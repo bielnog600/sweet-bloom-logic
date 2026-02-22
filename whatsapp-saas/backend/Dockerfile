@@ -19,7 +19,8 @@ RUN rm -rf dist && npx tsc 2>&1; \
       echo "FATAL: dist/index.js not found, build failed"; \
       exit 1; \
     fi
-RUN ls -la dist/ && ls -la dist/utils/ && ls -la dist/jobs/ && ls -la dist/modules/whatsapp/
+RUN cp -r src/db/migrations dist/db/migrations
+RUN ls -la dist/ && ls -la dist/utils/ && ls -la dist/jobs/ && ls -la dist/modules/whatsapp/ && ls -la dist/db/migrations/
 
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
