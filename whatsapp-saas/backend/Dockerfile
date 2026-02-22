@@ -1,9 +1,11 @@
 FROM node:20-alpine
 
+RUN apk add --no-cache python3 make g++ git
+
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm install --ignore-scripts=false
 
 COPY . .
 RUN npm run build
