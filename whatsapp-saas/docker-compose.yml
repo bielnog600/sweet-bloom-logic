@@ -15,6 +15,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - internal
 
   redis:
     image: redis:7-alpine
@@ -25,16 +27,22 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - internal
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
     env_file:
       - .env
     environment:
       - SESSIONS_DIR=/app/sessions
       - NODE_ENV=production
+      - DATABASE_URL=postgresql://${DB_USER:-whatsapp_saas}:${DB_PASSWORD:-supersecret}@postgres:5432/${DB_NAME:-whatsapp_saas}
+      - REDIS_URL=redis://redis:6379
     volumes:
       - whatsapp_sessions:/app/sessions
     depends_on:
@@ -43,6 +51,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - internal
 
   worker:
     build:
@@ -54,6 +64,8 @@ services:
     environment:
       - SESSIONS_DIR=/app/sessions
       - NODE_ENV=production
+      - DATABASE_URL=postgresql://${DB_USER:-whatsapp_saas}:${DB_PASSWORD:-supersecret}@postgres:5432/${DB_NAME:-whatsapp_saas}
+      - REDIS_URL=redis://redis:6379
     volumes:
       - whatsapp_sessions:/app/sessions
     depends_on:
@@ -62,19 +74,29 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - internal
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=https://api.seudominio.com
-      - NEXT_PUBLIC_WS_URL=https://api.seudominio.com
+      - NEXT_PUBLIC_API_URL=${PUBLIC_API_URL:-https://api.seudominio.com}
+      - NEXT_PUBLIC_WS_URL=${PUBLIC_WS_URL:-https://api.seudominio.com}
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - internal
 
 volumes:
   pgdata:
   redisdata:
   whatsapp_sessions:
+
+networks:
+  internal:
+    driver: bridge
