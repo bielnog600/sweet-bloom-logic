@@ -35,6 +35,9 @@ app.use('/api/auth', createAuthRoutes(db));
 app.use('/api/whatsapp', authMiddleware, createWhatsAppRoutes(waManager, db));
 app.use('/api/inbox', authMiddleware, createInboxRoutes(db));
 
+// Root
+app.get('/', (_, res) => res.json({ app: 'WhatsApp SaaS API', status: 'running' }));
+
 // Health check
 app.get('/health', (_, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
