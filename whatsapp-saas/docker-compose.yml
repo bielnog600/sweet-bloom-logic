@@ -82,7 +82,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "${FRONTEND_PORT:-3002}:3000"
     environment:
       - NEXT_PUBLIC_API_URL=${PUBLIC_API_URL:-https://api.seudominio.com}
       - NEXT_PUBLIC_WS_URL=${PUBLIC_WS_URL:-https://api.seudominio.com}
