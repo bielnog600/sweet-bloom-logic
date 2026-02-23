@@ -77,8 +77,9 @@ export function createWhatsAppRoutes(manager: WhatsAppConnectionManager, db: Poo
 
       await manager.connect(tenantId, instanceId);
       res.json({ message: 'Conexão iniciada. QR será enviado via WebSocket.' });
-    } catch (err) {
-      res.status(500).json({ error: 'Erro ao conectar instância' });
+    } catch (err: any) {
+      console.error('[WA Connect] Erro ao conectar instância:', err);
+      res.status(500).json({ error: err.message || 'Erro ao conectar instância' });
     }
   });
 
