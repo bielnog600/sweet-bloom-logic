@@ -1,4 +1,5 @@
 import './globals.css';
+import Navbar from '../components/Navbar';
 
 export const metadata = {
   title: 'WhatsApp SaaS',
@@ -8,7 +9,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
