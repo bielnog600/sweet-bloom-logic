@@ -5,7 +5,6 @@ import makeWASocket, {
   proto,
   makeCacheableSignalKeyStore,
   fetchLatestBaileysVersion,
-  makeInMemoryStore,
 } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 import { Pool } from 'pg';
@@ -23,7 +22,6 @@ interface ManagedInstance {
   status: 'disconnected' | 'connecting' | 'connected' | 'qr_pending';
   retryCount: number;
   maxRetries: number;
-  store: ReturnType<typeof makeInMemoryStore>;
 }
 
 export class WhatsAppConnectionManager {
@@ -85,7 +83,7 @@ export class WhatsAppConnectionManager {
 
     const { version } = await fetchLatestBaileysVersion();
 
-    const store = makeInMemoryStore({ logger });
+    
 
     const socket = makeWASocket({
       version,
@@ -98,7 +96,7 @@ export class WhatsAppConnectionManager {
       generateHighQualityLinkPreview: true,
     });
 
-    store.bind(socket.ev);
+    
 
     const instance: ManagedInstance = {
       socket,
@@ -107,7 +105,6 @@ export class WhatsAppConnectionManager {
       status: 'connecting',
       retryCount: 0,
       maxRetries: 5,
-      store,
     };
 
     this.instances.set(key, instance);
