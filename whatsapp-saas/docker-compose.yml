@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
+    pull_policy: always
     environment:
       POSTGRES_USER: ${DB_USER:-whatsapp_saas}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-supersecret}
@@ -20,6 +21,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    pull_policy: always
     volumes:
       - redisdata:/data
     healthcheck:
@@ -31,6 +33,7 @@ services:
       - internal
 
   backend:
+    image: ${COMPOSE_PROJECT_NAME:-whatsapp}_backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -55,6 +58,7 @@ services:
       - internal
 
   worker:
+    image: ${COMPOSE_PROJECT_NAME:-whatsapp}_backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
