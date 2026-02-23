@@ -46,6 +46,9 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${DB_USER:-whatsapp_saas}:${DB_PASSWORD:-supersecret}@postgres:5432/${DB_NAME:-whatsapp_saas}
       - REDIS_URL=redis://redis:6379
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://whatsapp.biewdev.se}
+      - JWT_SECRET=${JWT_SECRET:-troque-por-um-segredo-forte}
+      - SESSION_ENCRYPTION_KEY=${SESSION_ENCRYPTION_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
     volumes:
       - whatsapp_sessions:/app/sessions
     depends_on:
