@@ -98,12 +98,14 @@ export class WhatsAppConnectionManager {
 
     
 
+    const previousRetryCount = existing?.retryCount || 0;
+
     const instance: ManagedInstance = {
       socket,
       tenantId,
       instanceId,
       status: 'connecting',
-      retryCount: 0,
+      retryCount: previousRetryCount,
       maxRetries: 5,
     };
 
