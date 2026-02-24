@@ -41,9 +41,21 @@ export async function api(path: string, options: RequestInit = {}, token?: strin
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
-  const data = await res.json();
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  } catch (err) {
+    throw new Error('Servidor indisponível. Verifique se o backend está rodando.');
+  }
 
-  if (!res.ok) throw new Error(data.error || 'Erro na requisição');
+  const text = await res.text();
+  let data: any;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(`Resposta inesperada do servidor (status ${res.status})`);
+  }
+
+  if (!res.ok) throw new Error(data.error || `Erro na requisição (${res.status})`);
   return data;
 }
